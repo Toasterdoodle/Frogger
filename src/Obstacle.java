@@ -1,8 +1,7 @@
 /**
  * Created by michael_hopps on 2/14/17.
  */
-public class Obstacle extends Sprite {
-
+public class Obstacle{
 
     /*
     You could modify this class to be a parent to each obstacle,
@@ -17,14 +16,4 @@ public class Obstacle extends Sprite {
     It will make movement easier and hit detection cleaner.
      */
 
-
-
-    public Obstacle(int x, int y){ //, int dir){ ? some go left, some right.
-        super(x, y, EAST );
-        //setPic
-
-
-
-    }
-
-}
+}//end class

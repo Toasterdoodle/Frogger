@@ -10,55 +10,76 @@ import java.io.File;
  */
 public class Sprite {
 
-    private static int nextID = 1; //static instance fields- there is ONE shared variable for all objects of this class.
+    //=======Instance Fields======
 
+    private static int nextID = 1; //static instance fields- there is ONE shared variable for all objects of this class.
     private Point loc; //top left corner of this Sprite. Note loc.x and loc.y are the easy way to access the point.
     private int dir, picOrientation; //dir is the current direction in degrees.  See the constants below.
     private BufferedImage pic; //put the file in the res folder.
     private int speed; //Number of pixels moved each frame.
+
     private int id;
+
     public static final int NORTH = 90, SOUTH = 270, WEST = 180, EAST = 0, NE = 45, NW = 135, SW = 225, SE = 315;
 
+    //=======constructor=======
 
     public Sprite(int x, int y, int direction) {
+
         loc = new Point(x, y);
         dir = direction;
         setPic("blank.png", NORTH);
         speed = getBoundingRectangle().height;  //moves one height's worth by default.
-
         id = nextID;
         nextID++;
-    }
+
+    }//end Sprite
+
+    //------------------------
+
+    //=======methods=======
 
     /**
      * This draws the image pic at the Point loc, rotated to face dir.
      */
     public void draw(Graphics2D g2) {
+
         double rotationRequired = Math.toRadians(picOrientation - dir);
         double halfWidth = pic.getWidth() / 2;
         double halfHeight = pic.getHeight() / 2;
         g2.rotate(rotationRequired, loc.x+halfWidth, loc.y+halfHeight);
         g2.drawImage(pic, loc.x, loc.y, null);
         g2.rotate(-rotationRequired, loc.x+halfWidth, loc.y+halfHeight);
+
 //        g2.draw(getBoundingRectangle());
-    }
+
+    }//end draw
+
+    //------------------------
 
     /**
      * Moves the pic in the direction the Sprite is facing (dir).
      */
     public void update() {
+
         int dx = (int) (Math.cos(Math.toRadians(dir)) * speed);
         int dy = -(int) (Math.sin(Math.toRadians(dir)) * speed);
         loc.translate(dx, dy);
-    }
+
+    }//end update
+
+    //------------------------
 
     /**
      Returns true if this Sprite intersects the other Sprite
      */
     public boolean intersects(Sprite other){
-        return getBoundingRectangle().intersects(other.getBoundingRectangle());
-    }
 
+        return getBoundingRectangle().intersects(other.getBoundingRectangle());
+
+    }//end intersects
+
+    //------------------------
 
     /**
      * Changes the image file that this Sprite uses to draw.
@@ -66,32 +87,48 @@ public class Sprite {
      * @param fileName    the case-sensitive file name
      * @param orientation the direction that the image file is facing
      */
+
     public void setPic(String fileName, int orientation) {
+
         try {
             pic = ImageIO.read(new File("res/" + fileName));
             picOrientation = orientation;
-        } catch (Exception e) {
+        }//end try
+        catch (Exception e) {
             e.printStackTrace();
-        }
-    }
+        }//end catch
+
+    }//end setPic
+
+    //------------------------
 
     /**
      * Changes the direction the Sprite is facing by the given angle.
      *
      * @param delta change in angle measured in degrees
      */
+
     public void rotateBy(int delta) {
+
         setDir(dir + delta);
-    }
+
+    }//end rotateBy
+
+    //------------------------
 
     /**
      * Changes the direction the Sprite is facing to the given angle.
      *
      * @param newDir the new direction measured in degrees
      */
+
     public void setDir(int newDir) {
+
         dir = newDir;
-    }
+
+    }//end setDir
+
+    //------------------------
 
     /**
      * Returns a Rectangle object that surrounds this Sprite's pic.
@@ -99,80 +136,146 @@ public class Sprite {
      *
      * @return the bounding Rectangle.
      */
-    public Rectangle getBoundingRectangle() {
-        if(facingNorth() || facingSouth())
-            return new Rectangle(loc.x, loc.y, pic.getWidth(), pic.getHeight());
-        else
-            return new Rectangle(loc.x, loc.y, pic.getHeight(), pic.getWidth());
 
-    }
+    public Rectangle getBoundingRectangle() {
+
+        Rectangle box = null;
+
+        if(picOrientation % 180 != 0)
+            if(facingEast() || facingWest()) {
+                box = new Rectangle(loc.x, loc.y, pic.getHeight(), pic.getWidth());
+            }//end if
+            else {
+                box = new Rectangle(loc.x, loc.y, pic.getWidth(), pic.getHeight());
+            }//end else
+        else {
+            if (facingEast() || facingWest()) {
+                box = new Rectangle(loc.x, loc.y, pic.getWidth(), pic.getHeight());
+            }//end if
+            else {
+                box = new Rectangle(loc.x, loc.y, pic.getHeight(), pic.getWidth());
+            }//end else
+        }//end else
+
+        return box;
+
+    }//end getBoundingRectangle
+
+    //------------------------
 
     /**
      * Returns the location of this Sprite.
      *
      * @return A point object.  Use p.x and p.y or p.getX() and p.getY()
      */
-    public Point getLoc() {
+
+    public Point getLoc(){
+
         return loc;
-    }
+
+    }//end getLoc
+
+    //------------------------
 
     /**
      * Changes the location of this Sprite.
      *
      * @param loc
      */
+
     public void setLoc(Point loc) {
+
         this.loc = loc;
-    }
+
+    }//end setLoc
+
+    //------------------------
 
     /**
      * @return the direction the Sprite is facing.  See the constants for reference.
      */
+
     public int getDir() {
+
         return dir;
-    }
+
+    }//end getDir
+
+    //------------------------
 
     public BufferedImage getPic() {
+
         return pic;
-    }
+
+    }//end BufferedImage
+
+    //------------------------
 
     public void setPic(BufferedImage pic) {
+
         this.pic = pic;
-    }
+
+    }//end setPic
+
+    //------------------------
 
     /**
      * Returns true if this Sprite is facing East, not true EAST, but EAST at all.
      *
      * @return Returns true if this Sprite is facing East, not true EAST, but EAST at all.
      */
+
     public boolean facingEast() {
+
         return dir % 360 < 90 || dir % 360 > 270;
-    }
+
+    }//end facingeast
+
+    //------------------------
 
     /**
      * @return Returns true if this Sprite is facing NORTH, not true NORTH, but NORTH at all.
      */
+
     public boolean facingNorth() {
+
         return dir % 360 > 0 && dir % 360 < 180;
-    }
+
+    }//end facingNorth
+
+    //------------------------
 
     /**
      * @return Returns true if this Sprite is facing WEST, not true WEST, but WEST at all.
      */
+
     public boolean facingWest() {
+
         return dir % 360 > 90 && dir % 360 < 270;
-    }
+
+    }//end facingWest
+
+    //------------------------
 
     /**
      * @return Returns true if this Sprite is facing SOUTH, not true SOUTH, but SOUTH at all.
      */
+
     public boolean facingSouth() {
+
         return dir % 360 > 180;
-    }
+
+    }//end facingSouth
+
+    //------------------------
 
     public int getID() {
+
         return id;
-    }
+
+    }//end getID
+
+    //------------------------
 
     /**
      * Overrides the equals method.
@@ -180,43 +283,70 @@ public class Sprite {
      * @param o should be a Sprite
      * @return true if the sprites share the same ID
      */
+
     @Override
     public boolean equals(Object o) {
+
         if (!(o instanceof Sprite)) //if not a Sprite...false
             return false;
+
         Sprite other = (Sprite) o;  //cast Object to Sprite variable
+
         if (other.getID() == getID())    //if ID's match...
             return true;
         return false;
-    }
+
+    }//end equals
+
+    //------------------------
 
     /**
      Returns the center of this Sprite
      */
+
     public Point getCenterPoint(){
+
         return new Point(loc.x + pic.getWidth()/2, loc.y + pic.getHeight()/2);
-    }
+
+    }//end getCenterPoint
+
+    //------------------------
 
     /**
      Changes the speed of this Sprite
      */
+
     public void setSpeed(int newSpeed){
+
         speed = newSpeed;
-    }
+
+    }//end setSpeed
+
+    //------------------------
 
     /**
      Returns the current speed of this Sprite
      */
+
     public int getSpeed() {
+
         return speed;
-    }
+
+    }//end getSpeed
+
+    //------------------------
 
     public void flipImageHoriz(){
+
         AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
         tx.translate(-getPic().getWidth(null), 0);
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         setPic(op.filter(getPic(), null));
-    }
 
-}
+    }//end flipImageHoriz
+
+    //------------------------
+
+
+}//end class
 
